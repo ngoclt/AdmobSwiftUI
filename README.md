@@ -23,7 +23,6 @@ You can install AdmobSwiftUI using Swift Package Manager by adding the following
 ```
 https://github.com/dearhui/AdmobSwiftUI.git
 ```
-Before building the project, make sure you've added the -ObjC flag to the "Other Linker Flags" in the "Build Settings".
 
 ## Configuration
 To use AdmobSwiftUI, you need to add some key values to your Info.plist as required by the Google Mobile Ads SDK. Please refer to the SDK documentation for more details.
