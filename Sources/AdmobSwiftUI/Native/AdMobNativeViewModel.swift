@@ -1,14 +1,17 @@
 import SwiftUI
 import GoogleMobileAds
 
-public class AdMobNativeViewModel: NSObject, ObservableObject,NativeAdLoaderDelegate {
-    @Published public var nativeAd:NativeAd?
-    @Published public var isLoading: Bool = false
-    private var adLoader:AdLoader!
+public class AdMobNativeViewModel: NSObject, ObservableObject, NativeAdLoaderDelegate {
+    @Published public var nativeAd: NativeAd?
+    @Published public var adState: AdState = .idle
+
+    public var requestInterval: Int
+
+    private var adLoader: AdLoader!
     private var adUnitID: String
     private var lastRequestTime: Date?
-    public var requestInterval: Int
-    private static var cachedAds: [String:NativeAd] = [:]
+
+    private static var cachedAds: [String: NativeAd] = [:]
     private static var lastRequestTimes: [String: Date] = [:]
     
     public init(adUnitID: String = "ca-app-pub-3940256099942544/3986624511", requestInterval: Int = 1 * 60) {
@@ -26,12 +29,12 @@ public class AdMobNativeViewModel: NSObject, ObservableObject,NativeAdLoaderDele
             return
         }
         
-        guard !isLoading else {
+        guard adState != .loading else {
             print("Previous request is still loading, new request is canceled.")
             return
         }
         
-        isLoading = true
+        adState = .loading
         lastRequestTime = now
         AdMobNativeViewModel.lastRequestTimes[adUnitID] = now
         
@@ -42,22 +45,23 @@ public class AdMobNativeViewModel: NSObject, ObservableObject,NativeAdLoaderDele
         adLoader.load(Request())
     }
     
-    public func adLoader(_ adLoader:AdLoader, didReceive nativeAd:NativeAd) {
+    public func adLoader(_ adLoader:AdLoader, didReceive nativeAd: NativeAd) {
         self.nativeAd = nativeAd
         nativeAd.delegate = self
-        self.isLoading = false
+
+        adState = .loaded
         AdMobNativeViewModel.cachedAds[adUnitID] = nativeAd
         nativeAd.mediaContent.videoController.delegate = self
     }
     
     public func adLoader(_ adLoader:AdLoader, didFailToReceiveAdWithError error: Error) {
         print("\(adLoader) failed with error: \(error.localizedDescription)")
-        self.isLoading = false
+        adState = .error
     }
 }
 
 extension AdMobNativeViewModel: VideoControllerDelegate {
-    //VideoControllerDelegate methods
+
     public func videoControllerDidPlayVideo(_ videoController:VideoController) {
         // Implement this method to receive a notification when the video controller
         // begins playing the ad.
@@ -84,25 +88,25 @@ extension AdMobNativeViewModel: VideoControllerDelegate {
     }
 }
 
-// MARK: -NativeAdDelegate implementation
 extension AdMobNativeViewModel: NativeAdDelegate {
-    public func nativeAdDidRecordClick(_ nativeAd:NativeAd) {
+
+    public func nativeAdDidRecordClick(_ nativeAd: NativeAd) {
         print("\(#function) called")
     }
     
-    public func nativeAdDidRecordImpression(_ nativeAd:NativeAd) {
+    public func nativeAdDidRecordImpression(_ nativeAd: NativeAd) {
         print("\(#function) called")
     }
     
-    public func nativeAdWillPresentScreen(_ nativeAd:NativeAd) {
+    public func nativeAdWillPresentScreen(_ nativeAd: NativeAd) {
         print("\(#function) called")
     }
     
-    public func nativeAdWillDismissScreen(_ nativeAd:NativeAd) {
+    public func nativeAdWillDismissScreen(_ nativeAd: NativeAd) {
         print("\(#function) called")
     }
     
-    public func nativeAdDidDismissScreen(_ nativeAd:NativeAd) {
+    public func nativeAdDidDismissScreen(_ nativeAd: NativeAd) {
         print("\(#function) called")
     }
 }

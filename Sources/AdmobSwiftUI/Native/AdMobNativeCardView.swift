@@ -160,7 +160,6 @@ class AdMobNativeCardView: NativeAdView {
     func setupViews() {
         self.headlineView = headlineLabel
         self.advertiserView = advertiserLabel
-
         self.mediaView = myMediaView
         self.callToActionView = callToActionButton
         self.iconView = iconImageView

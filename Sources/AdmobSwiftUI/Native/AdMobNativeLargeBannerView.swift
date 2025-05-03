@@ -2,7 +2,7 @@ import GoogleMobileAds
 import UIKit
 
 class AdMobNativeLargeBannerView: NativeAdView {
-    /// required
+
     private lazy var myMediaView = {
         let mediaView = MediaView()
         mediaView.translatesAutoresizingMaskIntoConstraints = false
@@ -32,6 +32,7 @@ class AdMobNativeLargeBannerView: NativeAdView {
         label.backgroundColor = .systemFill
         label.layer.cornerRadius = 4
         label.clipsToBounds = true
+        label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
 
@@ -113,7 +114,6 @@ class AdMobNativeLargeBannerView: NativeAdView {
         ])
 
         addSubview(adTag)
-        adTag.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             adTag.topAnchor.constraint(equalTo: topAnchor, constant: 4),
             adTag.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 4),
