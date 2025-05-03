@@ -54,8 +54,8 @@ struct ContentView: View {
                     }
 
                     if !hiddenNative {
-                        AdMobNativeView(nativeViewModel: nativeViewModel, style: .largeBanner)
-                            .frame(height: 200)
+                        AdMobNativeView(nativeViewModel: nativeViewModel, style: .card)
+                            .frame(height: 370)
                             .background(Color(UIColor.secondarySystemBackground))
 
                         //                    AdMobNativeView(nativeViewModel: nativeViewModel, style: .card)

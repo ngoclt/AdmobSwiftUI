@@ -13,10 +13,10 @@ class AdMobNativeCardView: NativeAdView {
     private lazy var headlineLabel = {
         let label = UILabel()
         label.text = ""
-        label.font = .systemFont(ofSize: 17, weight: .medium)
+        label.font = .systemFont(ofSize: 16, weight: .medium)
         label.textColor = .label
         label.textAlignment = .left
-        label.numberOfLines = 1
+        label.numberOfLines = 2
         return label
     }()
 
@@ -39,9 +39,8 @@ class AdMobNativeCardView: NativeAdView {
         let button = UIButton(type: .system)
         button.setTitle("", for: .normal)
         button.setTitleColor(.white, for: .normal)
-        button.titleLabel?.font = .boldSystemFont(ofSize: 18)
+        button.titleLabel?.font = .boldSystemFont(ofSize: 16)
         button.backgroundColor = UIColor(hex: "#3871E0")
-        button.isUserInteractionEnabled = false
         button.layer.cornerRadius = 8
         button.clipsToBounds = true
         return button
@@ -54,17 +53,18 @@ class AdMobNativeCardView: NativeAdView {
         label.textColor = .label
         label.textAlignment = .left
         label.numberOfLines = 3
-        label.numberOfLines = 2
         label.isUserInteractionEnabled = false
         label.textColor = .secondaryLabel
+        label.setContentHuggingPriority(.defaultLow, for: .vertical)
+        label.setContentCompressionResistancePriority(.defaultLow, for: .vertical)
         return label
     }()
 
     private lazy var iconImageView = {
         let imageView = UIImageView()
         imageView.translatesAutoresizingMaskIntoConstraints = false
-        imageView.widthAnchor.constraint(equalToConstant: 40).isActive = true
-        imageView.heightAnchor.constraint(equalToConstant: 40).isActive = true
+        imageView.widthAnchor.constraint(equalToConstant: 44).isActive = true
+        imageView.heightAnchor.constraint(equalToConstant: 44).isActive = true
         imageView.layer.cornerRadius = 4
         imageView.clipsToBounds = true
         return imageView
@@ -124,9 +124,11 @@ class AdMobNativeCardView: NativeAdView {
         stackView.alignment = .fill
         stackView.distribution = .fill
         stackView.translatesAutoresizingMaskIntoConstraints = false
-        stackView.widthAnchor.constraint(equalToConstant: 39).isActive = true
-        stackView.layoutMargins = UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
+        stackView.heightAnchor.constraint(equalToConstant: 56).isActive = true
+        stackView.layoutMargins = UIEdgeInsets(top: 8, left: 0, bottom: 8, right: 0)
         stackView.isLayoutMarginsRelativeArrangement = true
+        stackView.setContentHuggingPriority(.defaultHigh, for: .vertical)
+        stackView.setContentCompressionResistancePriority(.defaultHigh, for: .vertical)
         return stackView
     }()
 
@@ -145,7 +147,7 @@ class AdMobNativeCardView: NativeAdView {
     private lazy var stackView = {
         let stackView = UIStackView(arrangedSubviews: [myMediaView, bottomStack])
         stackView.axis = .vertical
-        stackView.spacing = 8
+        stackView.spacing = 16
         stackView.alignment = .fill
         stackView.distribution = .fill
         stackView.translatesAutoresizingMaskIntoConstraints = false

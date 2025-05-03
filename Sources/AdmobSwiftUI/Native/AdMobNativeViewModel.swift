@@ -45,7 +45,7 @@ public class AdMobNativeViewModel: NSObject, ObservableObject, NativeAdLoaderDel
         adLoader.load(Request())
     }
     
-    public func adLoader(_ adLoader:AdLoader, didReceive nativeAd: NativeAd) {
+    public func adLoader(_ adLoader: AdLoader, didReceive nativeAd: NativeAd) {
         self.nativeAd = nativeAd
         nativeAd.delegate = self
 
@@ -54,7 +54,7 @@ public class AdMobNativeViewModel: NSObject, ObservableObject, NativeAdLoaderDel
         nativeAd.mediaContent.videoController.delegate = self
     }
     
-    public func adLoader(_ adLoader:AdLoader, didFailToReceiveAdWithError error: Error) {
+    public func adLoader(_ adLoader: AdLoader, didFailToReceiveAdWithError error: Error) {
         print("\(adLoader) failed with error: \(error.localizedDescription)")
         adState = .error
     }
