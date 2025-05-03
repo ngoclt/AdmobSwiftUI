@@ -118,9 +118,7 @@ extension AdMobNativeView {
 
 struct NativeAdView_Previews: PreviewProvider {
     static var previews: some View {
-        // 创建一个模拟的 NativeAdViewModel
-        let viewModel = AdMobNativeViewModel()  // 可能需要根据你的实际情况进行修改
-        // 假设 NativeAdViewStyle.basic 是一个有效的样式
+        let viewModel = AdMobNativeViewModel()
         ScrollView {
             VStack {
                 AdMobNativeView(nativeViewModel: viewModel, style: .card)

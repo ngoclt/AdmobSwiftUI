@@ -2,7 +2,7 @@ import SwiftUI
 import AdmobSwiftUI
 
 struct ContentView: View {
-    @StateObject private var nativeViewModel = NativeAdViewModel(requestInterval: 1)
+    @StateObject private var nativeViewModel = AdMobNativeViewModel(requestInterval: 1)
     private let adViewControllerRepresentable = AdViewControllerRepresentable()
     private let adCoordinator = InterstitialAdCoordinator()
     private let rewardCoordinator = RewardedAdCoordinator()
@@ -49,8 +49,8 @@ struct ContentView: View {
                     .background(Color.red)
                 
                 if !hiddenNative {
-                    AdNativeAdView(nativeViewModel: nativeViewModel, style: .banner)
-                        .frame(height: 80)
+                    AdMobNativeView(nativeViewModel: nativeViewModel, style: .largeBanner)
+                        .frame(height: 200)
                         .background(Color(UIColor.secondarySystemBackground))
                     
 //                    AdMobNativeView(nativeViewModel: nativeViewModel, style: .card)

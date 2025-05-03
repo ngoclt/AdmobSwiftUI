@@ -1,47 +1,117 @@
 import GoogleMobileAds
 import UIKit
-import LBTATools
 
 class AdMobNativeLargeBannerView: NativeAdView {
-    // require
-    let myMediaView = MediaView()
-    let headlineLabel = UILabel(text: "", font: .systemFont(ofSize: 15, weight: .medium), textColor: .label, numberOfLines: 2)
-    let adTag: UILabel = UILabel(text: "AD", font: .systemFont(ofSize: 10, weight: .semibold), textColor: .secondaryLabel, textAlignment: .center)
-    
-    // for web
-    let advertiserLabel = UILabel(text: "", font: .systemFont(ofSize: 14, weight: .regular), textColor: .secondaryLabel, numberOfLines: 1)
-    let bodyLabel = UILabel(text: "", font: .systemFont(ofSize: 14, weight: .regular), textColor: .secondaryLabel, numberOfLines: 3)
-    
-    // for app
-    let callToActionButton = UIButton(title: "", titleColor: .label, font: .boldSystemFont(ofSize: 14), backgroundColor: .systemBlue, target: nil, action: nil)
-    
+    /// required
+    private lazy var myMediaView = {
+        let mediaView = MediaView()
+        mediaView.translatesAutoresizingMaskIntoConstraints = false
+        mediaView.widthAnchor.constraint(equalTo: mediaView.heightAnchor, multiplier: 16/9).isActive = true
+        mediaView.contentMode = .scaleAspectFill
+        mediaView.clipsToBounds = true
+        return mediaView
+    }()
+
+    private lazy var headlineLabel = {
+        let label = UILabel()
+        label.text = ""
+        label.font = .systemFont(ofSize: 15, weight: .medium)
+        label.textColor = .label
+        label.textAlignment = .left
+        label.numberOfLines = 2
+        return label
+    }()
+
+    private lazy var adTag = {
+        let label = UILabel()
+        label.text = NSLocalizedString("AD", bundle: .module, comment: "Ad tag label")
+        label.font = .systemFont(ofSize: 10, weight: .semibold)
+        label.textColor = .secondaryLabel
+        label.textAlignment = .center
+        label.numberOfLines = 1
+        label.backgroundColor = .systemFill
+        label.layer.cornerRadius = 4
+        label.clipsToBounds = true
+        return label
+    }()
+
+    private lazy var advertiserLabel = {
+        let label = UILabel()
+        label.text = ""
+        label.font = .systemFont(ofSize: 14, weight: .regular)
+        label.textColor = .secondaryLabel
+        label.textAlignment = .left
+        label.numberOfLines = 1
+        label.backgroundColor = .systemFill
+        label.layer.cornerRadius = 4
+        label.clipsToBounds = true
+        return label
+    }()
+
+    private lazy var bodyLabel = {
+        let label = UILabel()
+        label.text = ""
+        label.font = .systemFont(ofSize: 14, weight: .regular)
+        label.textColor = .secondaryLabel
+        label.textAlignment = .left
+        label.numberOfLines = 0
+        return label
+    }()
+
+    private lazy var callToActionButton = {
+        let button = UIButton(type: .system)
+        button.setTitle("", for: .normal)
+        button.setTitleColor(.label, for: .normal)
+        button.titleLabel?.font = .boldSystemFont(ofSize: 14)
+        button.backgroundColor = .systemBlue
+        button.isUserInteractionEnabled = false
+        button.layer.cornerRadius = 8
+        button.clipsToBounds = true
+        return button
+    }()
+
+    private lazy var leftStack = {
+        let stackView = UIStackView(arrangedSubviews: [headlineLabel, advertiserLabel, bodyLabel, callToActionButton, UIView()])
+        stackView.axis = .vertical
+        stackView.spacing = 8
+        stackView.alignment = .fill
+        stackView.distribution = .fill
+        stackView.translatesAutoresizingMaskIntoConstraints = false
+        stackView.layoutMargins = UIEdgeInsets(top: 8, left: 0, bottom: 8, right: 8)
+        stackView.isLayoutMarginsRelativeArrangement = true
+        return stackView
+    }()
+
+    private lazy var stackView = {
+        let stackView = UIStackView(arrangedSubviews: [myMediaView, leftStack])
+        stackView.axis = .horizontal
+        stackView.spacing = 8
+        stackView.alignment = .fill
+        stackView.distribution = .fill
+        stackView.translatesAutoresizingMaskIntoConstraints = false
+        return stackView
+    }()
+
     override init(frame: CGRect) {
         super.init(frame: frame)
         setupViews()
     }
     
     func setupViews() {
-        // 設定 media view 的最小尺寸
-        myMediaView.translatesAutoresizingMaskIntoConstraints = false
-        myMediaView.widthAnchor.constraint(equalTo: myMediaView.heightAnchor, multiplier: 16/9).isActive = true
-        myMediaView.contentMode = .scaleAspectFill
-        myMediaView.clipsToBounds = true
         self.mediaView = myMediaView
-
         self.headlineView = headlineLabel
         self.advertiserView = advertiserLabel
         self.bodyView = bodyLabel
-        
-        callToActionButton.isUserInteractionEnabled = false
-        callToActionButton.layer.cornerRadius = 8
-        callToActionButton.clipsToBounds = true
         self.callToActionView = callToActionButton
-        
-        let leftStack = stack(headlineLabel, advertiserLabel, bodyLabel, callToActionButton).withMargins(.init(top: 8, left: 0, bottom: 8, right: 8))
 
-        hstack(myMediaView,leftStack, spacing: 8)
-        
-        // AD Tag Label
+        addSubview(stackView)
+        NSLayoutConstraint.activate([
+            stackView.topAnchor.constraint(equalTo: topAnchor, constant: 0),
+            stackView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 0),
+            stackView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: 0),
+            stackView.bottomAnchor.constraint(equalTo: bottomAnchor, constant: 0)
+        ])
+
         addSubview(adTag)
         adTag.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
@@ -50,11 +120,6 @@ class AdMobNativeLargeBannerView: NativeAdView {
             adTag.widthAnchor.constraint(greaterThanOrEqualToConstant: 25),
             adTag.heightAnchor.constraint(equalToConstant: 15)
         ])
-        
-        adTag.backgroundColor = .systemFill
-        adTag.layer.cornerRadius = 4
-        adTag.clipsToBounds = true
-        adTag.text = NSLocalizedString("AD", bundle: .module, comment: "Ad tag label")
     }
     
     required init?(coder aDecoder: NSCoder) {

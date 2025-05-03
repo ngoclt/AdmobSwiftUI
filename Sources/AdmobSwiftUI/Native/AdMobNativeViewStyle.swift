@@ -7,7 +7,7 @@ public enum AdMobNativeViewStyle {
     case banner
     case largeBanner
     
-    var view:NativeAdView {
+    var view: NativeAdView {
         switch self {
         case .basic:
             return makeNibView(name: "NativeAdView")
@@ -20,7 +20,7 @@ public enum AdMobNativeViewStyle {
         }
     }
     
-    func makeNibView(name: String) ->NativeAdView {
+    func makeNibView(name: String) -> NativeAdView {
         let bundle = Bundle.module
         let nib = UINib(nibName: name, bundle: bundle)
         return nib.instantiate(withOwner: nil, options: nil).first as!NativeAdView
