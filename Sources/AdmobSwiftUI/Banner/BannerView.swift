@@ -8,10 +8,10 @@
 import SwiftUI
 import GoogleMobileAds
 
-public struct BannerView: UIViewControllerRepresentable {
+public struct AdBannerView: UIViewControllerRepresentable {
     @State private var viewWidth: CGFloat = .zero
-    private let bannerView = GADBannerView()
-    private let adUnitID: String
+    private let bannerView = BannerView()
+    private var adUnitID: String
     
     public init(adUnitID: String = "ca-app-pub-3940256099942544/2934735716") {
         self.adUnitID = adUnitID
@@ -37,14 +37,14 @@ public struct BannerView: UIViewControllerRepresentable {
         guard viewWidth != .zero else { return }
         
         // Request a banner ad with the updated viewWidth.
-        bannerView.adSize = GADCurrentOrientationAnchoredAdaptiveBannerAdSizeWithWidth(viewWidth)
-        bannerView.load(GADRequest())
+        bannerView.adSize = currentOrientationAnchoredAdaptiveBanner(width: viewWidth)
+        bannerView.load(Request())
     }
     
-    public class Coordinator: NSObject, BannerViewControllerWidthDelegate, GADBannerViewDelegate {
-        let parent: BannerView
-        
-        init(_ parent: BannerView) {
+    public class Coordinator: NSObject, BannerViewControllerWidthDelegate, BannerViewDelegate {
+        let parent: AdBannerView
+
+        init(_ parent: AdBannerView) {
             self.parent = parent
         }
         
@@ -55,27 +55,27 @@ public struct BannerView: UIViewControllerRepresentable {
             parent.viewWidth = width
         }
         
-        public func bannerViewDidReceiveAd(_ bannerView: GADBannerView) {
+        public func bannerViewDidReceiveAd(_ bannerView: BannerView) {
             print("\(#function) called")
         }
         
-        public func bannerView(_ bannerView: GADBannerView, didFailToReceiveAdWithError error: Error) {
+        public func bannerView(_ bannerView: BannerView, didFailToReceiveAdWithError error: Error) {
             print("\(#function) called")
         }
         
-        public func bannerViewDidRecordImpression(_ bannerView: GADBannerView) {
+        public func bannerViewDidRecordImpression(_ bannerView: BannerView) {
             print("\(#function) called")
         }
         
-        public func bannerViewWillPresentScreen(_ bannerView: GADBannerView) {
+        public func bannerViewWillPresentScreen(_ bannerView: BannerView) {
             print("\(#function) called")
         }
         
-        public func bannerViewWillDismissScreen(_ bannerView: GADBannerView) {
+        public func bannerViewWillDismissScreen(_ bannerView: BannerView) {
             print("\(#function) called")
         }
         
-        public func bannerViewDidDismissScreen(_ bannerView: GADBannerView) {
+        public func bannerViewDidDismissScreen(_ bannerView: BannerView) {
             print("\(#function) called")
         }
     }
@@ -83,6 +83,6 @@ public struct BannerView: UIViewControllerRepresentable {
 
 struct BannerView_Previews: PreviewProvider {
     static var previews: some View {
-        BannerView()
+        AdBannerView()
     }
 }

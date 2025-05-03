@@ -14,12 +14,12 @@ public enum NativeAdViewStyle {
     case banner
     case largeBanner
     
-    var view: GADNativeAdView {
+    var view:NativeAdView {
         switch self {
         case .basic:
             return makeNibView(name: "NativeAdView")
         case .card:
-            return NativeAdCardView(frame: .zero)
+            return AdNativeAdCardView(frame: .zero)
         case .banner:
             return NativeAdBannerView(frame: .zero)
         case .largeBanner:
@@ -27,9 +27,9 @@ public enum NativeAdViewStyle {
         }
     }
     
-    func makeNibView(name: String) -> GADNativeAdView {
+    func makeNibView(name: String) ->NativeAdView {
         let bundle = Bundle.module
         let nib = UINib(nibName: name, bundle: bundle)
-        return nib.instantiate(withOwner: nil, options: nil).first as! GADNativeAdView
+        return nib.instantiate(withOwner: nil, options: nil).first as!NativeAdView
     }
 }

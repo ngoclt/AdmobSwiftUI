@@ -12,7 +12,7 @@ import GoogleMobileAds
 struct AdmobSwitUIDemoApp: App {
     
     init() {
-        GADMobileAds.sharedInstance().start(completionHandler: nil)
+        MobileAds.shared.start(completionHandler: nil)
     }
     
     var body: some Scene {

@@ -23,7 +23,7 @@ struct ContentView: View {
                     Task {
                         do {
                             let ad = try await adCoordinator.loadAppOpenAd()
-                            ad.present(fromRootViewController: adViewControllerRepresentable.viewController)
+                            ad.present(from: adViewControllerRepresentable.viewController)
                         } catch {
                             print(error.localizedDescription)
                         }
@@ -34,7 +34,7 @@ struct ContentView: View {
                     Task {
                         do {
                             let reward = try await rewardCoordinator.loadInterstitialAd()
-                            reward.present(fromRootViewController: adViewControllerRepresentable.viewController) {
+                            reward.present(from: adViewControllerRepresentable.viewController) {
                                 print("Reward amount: \(reward.adReward.amount)")
                             }
                         } catch {
@@ -51,16 +51,16 @@ struct ContentView: View {
                     hiddenNative.toggle()
                 }
                 
-                BannerView()
+                AdBannerView()
                     .frame(height: 50)
                     .background(Color.red)
                 
                 if !hiddenNative {
-                    NativeAdView(nativeViewModel: nativeViewModel, style: .banner)
+                    AdNativeAdView(nativeViewModel: nativeViewModel, style: .banner)
                         .frame(height: 80)
                         .background(Color(UIColor.secondarySystemBackground))
                     
-//                    NativeAdView(nativeViewModel: nativeViewModel, style: .card)
+//                    AdNativeAdView(nativeViewModel: nativeViewModel, style: .card)
 //                        .frame(height: 380) // 250 ~ 300
 //                        .background(Color(UIColor.secondarySystemBackground))
                 }

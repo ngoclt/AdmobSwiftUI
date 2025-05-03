@@ -8,20 +8,20 @@
 import GoogleMobileAds
 import SwiftUI
 
-public class InterstitialAdCoordinator: NSObject, GADFullScreenContentDelegate {
-    private var appOpenAd: GADAppOpenAd?
-    private var interstitial: GADInterstitialAd?
+public class InterstitialAdCoordinator: NSObject, FullScreenContentDelegate {
+    private var appOpenAd: AppOpenAd?
+    private var interstitial: InterstitialAd?
     private let appOpenadUnitID: String
     private let adUnitID: String
-    
-    public init(appOpenadUnitID: String = "ca-app-pub-3940256099942544/5662855259", adUnitID: String = "ca-app-pub-3940256099942544/4411468910") {
+
+    public init(appOpenadUnitID: String = "ca-app-pub-3940256099942544/5575463023", adUnitID: String = "ca-app-pub-3940256099942544/4411468910") {
         self.adUnitID = adUnitID
         self.appOpenadUnitID = appOpenadUnitID
     }
     
     public func loadAd() {
         clean()
-        GADInterstitialAd.load(withAdUnitID: adUnitID, request: GADRequest()) { ad, error in
+        InterstitialAd.load(with: adUnitID, request: Request()) { ad, error in
             self.interstitial = ad
             self.interstitial?.fullScreenContentDelegate = self
         }
@@ -32,15 +32,15 @@ public class InterstitialAdCoordinator: NSObject, GADFullScreenContentDelegate {
             return print("Ad wasn't ready")
         }
         
-        interstitial.present(fromRootViewController: viewController)
+        interstitial.present(from: viewController)
     }
     
     // MARK: - Async/await
-    public func loadInterstitialAd() async throws -> GADInterstitialAd {
+    public func loadInterstitialAd() async throws -> InterstitialAd {
         clean()
         
         return try await withCheckedThrowingContinuation { continuation in
-            GADInterstitialAd.load(withAdUnitID: adUnitID, request: GADRequest()) { ad, error in
+            InterstitialAd.load(with: adUnitID, request: Request()) { ad, error in
                 if let error = error {
                     continuation.resume(throwing: error)
                 } else if let ad = ad {
@@ -51,11 +51,11 @@ public class InterstitialAdCoordinator: NSObject, GADFullScreenContentDelegate {
         }
     }
     
-    public func loadAppOpenAd() async throws -> GADAppOpenAd {
+    public func loadAppOpenAd() async throws -> AppOpenAd {
         clean()
         
         return try await withCheckedThrowingContinuation { continuation in
-            GADAppOpenAd.load(withAdUnitID: appOpenadUnitID, request: GADRequest()) { ad, error in
+            AppOpenAd.load(with: appOpenadUnitID, request: Request()) { ad, error in
                 if let error = error {
                     continuation.resume(throwing: error)
                 } else if let ad = ad {
@@ -71,8 +71,8 @@ public class InterstitialAdCoordinator: NSObject, GADFullScreenContentDelegate {
         appOpenAd = nil
     }
     
-    // MARK: - GADFullScreenContentDelegate methods
-    public func adDidDismissFullScreenContent(_ ad: GADFullScreenPresentingAd) {
+    // MARK: -FullScreenContentDelegate methods
+    public func adDidDismissFullScreenContent(_ ad: any FullScreenPresentingAd) {
         clean()
     }
 }
