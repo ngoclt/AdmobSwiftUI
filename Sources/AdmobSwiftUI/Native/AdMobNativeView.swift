@@ -1,13 +1,13 @@
 import GoogleMobileAds
 import SwiftUI
 
-public struct AdNativeAdView: UIViewRepresentable {
+public struct AdMobNativeView: UIViewRepresentable {
     public typealias UIViewType = NativeAdView
     
-    @ObservedObject var nativeViewModel: NativeAdViewModel
-    var style: NativeAdViewStyle
+    @ObservedObject var nativeViewModel: AdMobNativeViewModel
+    var style: AdMobNativeViewStyle
     
-    public init(nativeViewModel: NativeAdViewModel, style: NativeAdViewStyle = .basic) {
+    public init(nativeViewModel: AdMobNativeViewModel, style: AdMobNativeViewStyle = .basic) {
         self.nativeViewModel = nativeViewModel
         self.style = style
     }
@@ -92,7 +92,7 @@ public struct AdNativeAdView: UIViewRepresentable {
     }
 }
 
-extension AdNativeAdView {
+extension AdMobNativeView {
 
     func imageOfStars(from starRating: NSDecimalNumber?) -> UIImage? {
         guard let rating = starRating?.doubleValue else {
@@ -119,11 +119,11 @@ extension AdNativeAdView {
 struct NativeAdView_Previews: PreviewProvider {
     static var previews: some View {
         // 创建一个模拟的 NativeAdViewModel
-        let viewModel = NativeAdViewModel()  // 可能需要根据你的实际情况进行修改
+        let viewModel = AdMobNativeViewModel()  // 可能需要根据你的实际情况进行修改
         // 假设 NativeAdViewStyle.basic 是一个有效的样式
         ScrollView {
             VStack {
-                AdNativeAdView(nativeViewModel: viewModel, style: .card)
+                AdMobNativeView(nativeViewModel: viewModel, style: .card)
                     .frame(width: .infinity, height: 300)
                     .background(Color.red)
             }

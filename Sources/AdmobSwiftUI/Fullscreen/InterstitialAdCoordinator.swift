@@ -1,10 +1,3 @@
-//
-//  InterstitialAdCoordinator.swift
-//  
-//
-//  Created by minghui on 2023/6/13.
-//
-
 import GoogleMobileAds
 import SwiftUI
 

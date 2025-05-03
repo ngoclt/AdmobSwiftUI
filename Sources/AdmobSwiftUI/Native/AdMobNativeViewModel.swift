@@ -1,14 +1,7 @@
-//
-//  SwiftUIView.swift
-//  
-//
-//  Created by minghui on 2023/6/14.
-//
-
 import SwiftUI
 import GoogleMobileAds
 
-public class NativeAdViewModel: NSObject, ObservableObject,NativeAdLoaderDelegate {
+public class AdMobNativeViewModel: NSObject, ObservableObject,NativeAdLoaderDelegate {
     @Published public var nativeAd:NativeAd?
     @Published public var isLoading: Bool = false
     private var adLoader:AdLoader!
@@ -21,8 +14,8 @@ public class NativeAdViewModel: NSObject, ObservableObject,NativeAdLoaderDelegat
     public init(adUnitID: String = "ca-app-pub-3940256099942544/3986624511", requestInterval: Int = 1 * 60) {
         self.adUnitID = adUnitID
         self.requestInterval = requestInterval
-        self.nativeAd = NativeAdViewModel.cachedAds[adUnitID]
-        self.lastRequestTime = NativeAdViewModel.lastRequestTimes[adUnitID]
+        self.nativeAd = AdMobNativeViewModel.cachedAds[adUnitID]
+        self.lastRequestTime = AdMobNativeViewModel.lastRequestTimes[adUnitID]
     }
     
     public func refreshAd() {
@@ -40,7 +33,7 @@ public class NativeAdViewModel: NSObject, ObservableObject,NativeAdLoaderDelegat
         
         isLoading = true
         lastRequestTime = now
-        NativeAdViewModel.lastRequestTimes[adUnitID] = now
+        AdMobNativeViewModel.lastRequestTimes[adUnitID] = now
         
         let adViewOptions = NativeAdViewAdOptions()
         adViewOptions.preferredAdChoicesPosition = .topRightCorner
@@ -53,7 +46,7 @@ public class NativeAdViewModel: NSObject, ObservableObject,NativeAdLoaderDelegat
         self.nativeAd = nativeAd
         nativeAd.delegate = self
         self.isLoading = false
-        NativeAdViewModel.cachedAds[adUnitID] = nativeAd
+        AdMobNativeViewModel.cachedAds[adUnitID] = nativeAd
         nativeAd.mediaContent.videoController.delegate = self
     }
     
@@ -63,7 +56,7 @@ public class NativeAdViewModel: NSObject, ObservableObject,NativeAdLoaderDelegat
     }
 }
 
-extension NativeAdViewModel:VideoControllerDelegate {
+extension AdMobNativeViewModel: VideoControllerDelegate {
     //VideoControllerDelegate methods
     public func videoControllerDidPlayVideo(_ videoController:VideoController) {
         // Implement this method to receive a notification when the video controller
@@ -92,7 +85,7 @@ extension NativeAdViewModel:VideoControllerDelegate {
 }
 
 // MARK: -NativeAdDelegate implementation
-extension NativeAdViewModel:NativeAdDelegate {
+extension AdMobNativeViewModel: NativeAdDelegate {
     public func nativeAdDidRecordClick(_ nativeAd:NativeAd) {
         print("\(#function) called")
     }

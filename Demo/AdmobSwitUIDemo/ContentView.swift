@@ -1,10 +1,3 @@
-//
-//  ContentView.swift
-//  AdmobSwitUIDemo
-//
-//  Created by minghui on 2023/6/13.
-//
-
 import SwiftUI
 import AdmobSwiftUI
 
@@ -60,7 +53,7 @@ struct ContentView: View {
                         .frame(height: 80)
                         .background(Color(UIColor.secondarySystemBackground))
                     
-//                    AdNativeAdView(nativeViewModel: nativeViewModel, style: .card)
+//                    AdMobNativeView(nativeViewModel: nativeViewModel, style: .card)
 //                        .frame(height: 380) // 250 ~ 300
 //                        .background(Color(UIColor.secondarySystemBackground))
                 }

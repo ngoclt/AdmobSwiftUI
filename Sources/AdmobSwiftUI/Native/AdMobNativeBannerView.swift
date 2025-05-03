@@ -1,15 +1,8 @@
-//
-//  NativeAdBannerView.swift
-//  
-//
-//  Created by minghui on 2023/6/15.
-//
-
 import GoogleMobileAds
 import UIKit
 import LBTATools
 
-class NativeAdBannerView:NativeAdView {
+class AdMobNativeBannerView: NativeAdView {
     
     let adTag: UILabel = UILabel(text: "AD", font: .systemFont(ofSize: 11, weight: .semibold), textColor: .white, textAlignment: .center)
     let headlineLabel = UILabel(text: "", font: .systemFont(ofSize: 15, weight: .medium), textColor: .label)

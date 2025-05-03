@@ -1,14 +1,7 @@
-//
-//  File.swift
-//  
-//
-//  Created by minghui on 2023/6/15.
-//
-
 import GoogleMobileAds
 import SwiftUI
 
-public enum NativeAdViewStyle {
+public enum AdMobNativeViewStyle {
     case basic
     case card
     case banner
@@ -19,11 +12,11 @@ public enum NativeAdViewStyle {
         case .basic:
             return makeNibView(name: "NativeAdView")
         case .card:
-            return AdNativeAdCardView(frame: .zero)
+            return AdMobNativeCardView(frame: .zero)
         case .banner:
-            return NativeAdBannerView(frame: .zero)
+            return AdMobNativeBannerView(frame: .zero)
         case .largeBanner:
-            return NativeLargeAdBannerView(frame: .zero)
+            return AdMobNativeLargeBannerView(frame: .zero)
         }
     }
     

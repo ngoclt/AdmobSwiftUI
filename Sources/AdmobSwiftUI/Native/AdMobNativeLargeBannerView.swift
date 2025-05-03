@@ -1,15 +1,8 @@
-//
-//  NativeBigAdBannerView.swift
-//
-//
-//  Created by minghui on 2024/3/5.
-//
-
 import GoogleMobileAds
 import UIKit
 import LBTATools
 
-class NativeLargeAdBannerView: NativeAdView {
+class AdMobNativeLargeBannerView: NativeAdView {
     // require
     let myMediaView = MediaView()
     let headlineLabel = UILabel(text: "", font: .systemFont(ofSize: 15, weight: .medium), textColor: .label, numberOfLines: 2)

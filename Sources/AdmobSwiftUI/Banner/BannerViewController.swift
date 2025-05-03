@@ -1,14 +1,6 @@
-//
-//  BannerViewController.swift
-//  
-//
-//  Created by minghui on 2023/6/13.
-//
-
 import UIKit
 
-// Delegate methods for receiving width update messages.
-
+/// Delegate methods for receiving width update messages.
 protocol BannerViewControllerWidthDelegate: AnyObject {
     func bannerViewController(_ bannerViewController: BannerViewController, didUpdate width: CGFloat)
 }

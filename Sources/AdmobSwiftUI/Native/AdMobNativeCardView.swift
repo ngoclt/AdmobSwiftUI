@@ -1,15 +1,7 @@
-//
-//  File.swift
-//  
-//
-//  Created by minghui on 2023/6/15.
-//
-
 import GoogleMobileAds
 import UIKit
-import LBTATools
 
-class AdNativeAdCardView: NativeAdView {
+class AdMobNativeCardView: NativeAdView {
 
     let adTag: UILabel = UILabel(text: "AD", font: .systemFont(ofSize: 10, weight: .semibold), textColor: .white)
     let headlineLabel = UILabel(text: "", font: .systemFont(ofSize: 17, weight: .medium), textColor: .label)
