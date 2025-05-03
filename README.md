@@ -9,6 +9,8 @@ AdmobSwiftUI is a Swift package that integrates Admob ads into SwiftUI. This pac
 - Reward Interstitial
 - Native
 
+This is a forked version from: [dearhui/AdmobSwiftUI](https://github.com/dearhui/AdmobSwiftUI)
+
 ## Requirements
 
 - iOS 14.0+
@@ -93,8 +95,9 @@ Then, you can include Banner ads in your view, or show Interstitial or Reward ad
                 BannerView()
                     .frame(height: 50)
                 
-                NativeAdView(nativeViewModel: nativeViewModel)
-                    .frame(height: 300) // 250 ~ 300
+                AdMobNativeView(nativeViewModel: nativeViewModel, style: .largeBanner)
+                    .frame(height: 200)
+                    .background(Color(UIColor.secondarySystemBackground))
                     .onAppear {
                         nativeViewModel.refreshAd()
                     }
