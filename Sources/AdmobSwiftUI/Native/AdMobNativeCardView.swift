@@ -67,6 +67,7 @@ class AdMobNativeCardView: NativeAdView {
         imageView.heightAnchor.constraint(equalToConstant: 44).isActive = true
         imageView.layer.cornerRadius = 4
         imageView.clipsToBounds = true
+        imageView.contentMode = .scaleAspectFit
         return imageView
     }()
 
