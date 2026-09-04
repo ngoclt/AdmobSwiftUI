@@ -1,125 +1,299 @@
 # AdmobSwiftUI
 
-AdmobSwiftUI is a Swift package that integrates Admob ads into SwiftUI. This package implements several ways to use Admob in SwiftUI:
+A Swift package that integrates Google AdMob into SwiftUI applications, with first-class support for Banner, Interstitial, App Open, Rewarded, Rewarded Interstitial, and Native ads — plus built-in UMP consent management (GDPR) and ATT integration.
 
-- Banner
-- Interstitial
-- App Open
-- Reward
-- Reward Interstitial
-- Native
+## ✨ What's New in 3.0
 
-This is a forked version from: [dearhui/AdmobSwiftUI](https://github.com/dearhui/AdmobSwiftUI)
+- 🧵 **Swift 6 language mode** — fully concurrency-checked, all coordinators are `@MainActor`
+- 🔁 **Unified async/await coordinator API** — `load()` / `present(from:)` / `loadAndPresent(from:)` with observable `adState`
+- 🛡️ **UMP consent management** — `initialize()` runs the GDPR consent flow before starting the SDK; ATT helper included
+- 🎨 **Pure SwiftUI native ad templates** — XIBs are gone; build fully custom layouts with `AdmobNativeAdContainer`
+- 📐 **Self-sizing banners** — no more manual `.frame(height:)`; large anchored adaptive sizes with video demand
+- 📂 **Collapsible banners** and banner lifecycle events
+- ⬆️ **Google Mobile Ads SDK 13.5+, iOS 15+**
+
+Upgrading from 2.x or 1.x? See the [Migration Guide](MIGRATION.md). Full changes in the [CHANGELOG](CHANGELOG.md).
 
 ## Requirements
 
-- iOS 14.0+
-- Google Mobile Ads SDK 10.6.0+
+- iOS 15.0+
+- Xcode 16.0+
+- Google Mobile Ads SDK 13.5+ (resolved automatically)
+- UserMessagingPlatform 3.0+ (resolved automatically)
 
 ## Installation
 
-You can install AdmobSwiftUI using Swift Package Manager by adding the following URL to your project:
+Add the package with Swift Package Manager:
 
 ```
 https://github.com/dearhui/AdmobSwiftUI.git
 ```
 
-## Configuration
-To use AdmobSwiftUI, you need to add some key values to your Info.plist as required by the Google Mobile Ads SDK. Please refer to the SDK documentation for more details.
-
-Additionally, you need to start the Google Mobile Ads SDK at the start of your app. Add the following code to your @main struct:
-
 ```swift
-@main
-struct AdmobSwitUIDemoApp: App {
-    
-    init() {
-        GADMobileAds.sharedInstance().start(completionHandler: nil)
-    }
-    
-    var body: some Scene {
-        WindowGroup {
-            ContentView()
-        }
-    }
-}
+.package(url: "https://github.com/dearhui/AdmobSwiftUI.git", from: "3.0.0")
 ```
 
-## Usage
+## Setup
 
-First, you need to import AdmobSwiftUI in your SwiftUI file and initialize all the ad components you need.
+### 1. Info.plist
+
+```xml
+<key>GADApplicationIdentifier</key>
+<string>ca-app-pub-xxxxxxxxxxxxxxxx~yyyyyyyyyy</string>
+<key>NSUserTrackingUsageDescription</key>
+<string>This identifier will be used to deliver personalized ads to you.</string>
+```
+
+Optionally delay app measurement until consent is gathered (recommended with UMP):
+
+```xml
+<key>GADDelayAppMeasurementInit</key>
+<true/>
+```
+
+### 2. Build Settings
+
+Add the `-ObjC` flag to "Other Linker Flags".
+
+### 3. Initialize
+
+`initialize()` is async: with the default `.gatherFirst` mode it runs the full UMP consent flow first, and only starts the Mobile Ads SDK once ads can be requested.
 
 ```swift
 import SwiftUI
 import AdmobSwiftUI
 
-struct ContentView: View {
-    @StateObject private var nativeViewModel = NativeAdViewModel()
-    private let adViewControllerRepresentable = AdViewControllerRepresentable()
-    private let adCoordinator = InterstitialAdCoordinator()
-    private let rewardCoordinator = RewardedAdCoordinator()
-```
-
-Then, you can include Banner ads in your view, or show Interstitial or Reward ads when the user performs a certain action.
-
-```swift
-    var body: some View {
-        ScrollView {
-            VStack (spacing: 20) {
-            
-                Button("Show App Open") {
-                    Task {
-                        do {
-                            let ad = try await adCoordinator.loadAppOpenAd()
-                            ad.present(fromRootViewController: adViewControllerRepresentable.viewController)
-                        } catch {
-                            print(error.localizedDescription)
-                        }
-                    }
+@main
+struct MyApp: App {
+    var body: some Scene {
+        WindowGroup {
+            ContentView()
+                .task {
+                    let config = AdmobSwiftUI.Configuration(
+                        enableDebugMode: true   // test ads on simulator/devices
+                    )
+                    await AdmobSwiftUI.initialize(with: config)
+                    // Google recommends requesting ATT after the UMP flow
+                    await ConsentManager.shared.requestTrackingAuthorization()
                 }
-                
-                Button("Show reward InterstitialAd") {
-                    Task {
-                        do {
-                            let reward = try await rewardCoordinator.loadInterstitialAd()
-                            reward.present(fromRootViewController: adViewControllerRepresentable.viewController) {
-                                print("Reward amount: \(reward.adReward.amount)")
-                            }
-                        } catch {
-                            print(error.localizedDescription)
-                        }
-                    }
-                }
-                
-                BannerView()
-                    .frame(height: 50)
-                
-                AdMobNativeView(nativeViewModel: nativeViewModel, style: .largeBanner)
-                    .frame(height: 200)
-                    .background(Color(UIColor.secondarySystemBackground))
-                    .onAppear {
-                        nativeViewModel.refreshAd()
-                    }
-            }
-        }
-        .padding()
-        .background {
-            // Add the adViewControllerRepresentable to the background so it
-            // doesn't influence the placement of other views in the view hierarchy.
-            adViewControllerRepresentable
-                .frame(width: .zero, height: .zero)
         }
     }
 }
 ```
 
-## Note
+Prefer to drive consent yourself? Pass `consentMode: .manual` and the SDK starts immediately, exactly like v2.
 
-This package uses Google AdMob, make sure your project has imported and configured the Google Mobile Ads SDK properly.
+## Consent Management (UMP + ATT)
 
-## Contribution
+```swift
+// Run the consent flow manually (no-op if the user already chose)
+try await ConsentManager.shared.gatherConsent()
 
-Any form of contribution is welcome, including feature requests, bug reports, or pull requests.
+// Required privacy options entry point (e.g. a button in Settings)
+if ConsentManager.shared.isPrivacyOptionsRequired {
+    try await ConsentManager.shared.presentPrivacyOptionsForm()
+}
+
+// Observe status in SwiftUI
+@ObservedObject var consent = ConsentManager.shared
+// consent.consentStatus: .unknown / .required / .notRequired / .obtained
+// consent.canRequestAds
+```
+
+Test GDPR behavior from anywhere by simulating an EEA device:
+
+```swift
+try await ConsentManager.shared.gatherConsent(
+    debugSettings: ConsentDebugSettings(geography: .eea)
+)
+```
+
+## Ad Unit IDs
+
+`AdmobSwiftUI.AdUnitIDs` switches between Google's test IDs (Debug builds) and your production IDs (Release builds) automatically. Every coordinator and view defaults to it:
+
+```swift
+let bannerID = AdmobSwiftUI.AdUnitIDs.banner
+AdmobSwiftUI.AdUnitIDs.printCurrentConfiguration()
+```
+
+## Banner Ads
+
+Banners size themselves — don't add an external `.frame(height:)`:
+
+```swift
+// Anchored adaptive banner (50–150pt tall depending on width, video-capable)
+BannerView()
+
+// Inline adaptive banner for scrollable content
+BannerView(style: .inline)
+
+// Inline with a height cap — uncapped inline ads may grow up to the
+// device height (Google requires >= 32pt, recommends >= 50pt)
+BannerView(style: .inline(maxHeight: 150))
+
+// Collapsible banner (mind Google's display policies)
+BannerView(style: .collapsible(placement: .bottom))
+
+// Lifecycle events
+BannerView { event in
+    switch event {
+    case .didReceive(let adSize): print("Loaded: \(adSize)")
+    case .didFailToReceive(let error): print("Failed: \(error)")
+    case .didRecordClick: print("Clicked")
+    default: break
+    }
+}
+```
+
+## Interstitial Ads
+
+All fullscreen coordinators share the same shape: `adState` / `isReady` / `load()` / `present(from:)` / `loadAndPresent(from:)`. The view controller parameter defaults to `nil`, letting the SDK present from the top-most view controller automatically — the recommended approach for SwiftUI apps ([official docs](https://developers.google.com/admob/ios/interstitial#swiftui)). Pass one explicitly (e.g. via `AdViewControllerRepresentable`) only when you need a specific presenter.
+
+```swift
+struct ContentView: View {
+    @StateObject private var interstitialCoordinator = InterstitialAdCoordinator()
+
+    var body: some View {
+        Button("Show Interstitial") {
+            Task {
+                try? await interstitialCoordinator.loadAndPresent()
+            }
+        }
+    }
+}
+```
+
+## App Open Ads
+
+Enable `autoReloadsOnForeground` and call `presentIfAvailable()` — expiration (4 hours, per Google policy), reloading after dismissal, and foreground refills are handled for you:
+
+```swift
+struct RootView: View {
+    @Environment(\.scenePhase) private var scenePhase
+    @StateObject private var appOpenCoordinator = AppOpenAdCoordinator()
+
+    var body: some View {
+        ContentView()
+            .onAppear { appOpenCoordinator.autoReloadsOnForeground = true }
+            .onChange(of: scenePhase) { phase in
+                if phase == .active {
+                    appOpenCoordinator.presentIfAvailable()
+                }
+            }
+    }
+}
+```
+
+## Rewarded Ads
+
+`present(from:)` suspends until the user earns the reward and returns it. Dismissing early throws `AdmobSwiftUIError.rewardNotEarned`:
+
+```swift
+@StateObject private var rewardCoordinator = RewardedAdCoordinator()
+
+Button("Watch ad to earn coins") {
+    Task {
+        do {
+            let reward = try await rewardCoordinator.loadAndPresent()
+            grantCoins(reward.amount)   // reward.type from your ad unit config
+        } catch {
+            print("No reward: \(error)")
+        }
+    }
+}
+```
+
+Rewarded interstitials use the same coordinator: `try await rewardCoordinator.load(.rewardedInterstitial)`.
+
+## Native Ads
+
+### Built-in templates
+
+Templates are pure SwiftUI and self-sizing. Nothing is rendered until an ad is loaded:
+
+```swift
+struct ContentView: View {
+    @StateObject private var nativeViewModel = NativeAdViewModel()
+
+    var body: some View {
+        NativeAdView(nativeViewModel: nativeViewModel, style: .card)
+            .task { try? await nativeViewModel.load() }
+    }
+}
+```
+
+Styles: `.basic` (full layout with media), `.card` (media-led card), `.banner` (compact text row), `.largeBanner` (media left, text right).
+
+> One ad, one view: attaching the same `NativeAd` object to multiple views at once routes media and clicks only to the last one (SDK behavior).
+
+### Custom layouts
+
+Build any layout with `AdmobNativeAdContainer`. The components vended by `NativeAdAssets` are pre-bound to the SDK's asset views, so impressions and clicks are attributed correctly:
+
+```swift
+if let ad = nativeViewModel.nativeAd {
+    AdmobNativeAdContainer(ad: ad) { assets in
+        VStack(alignment: .leading, spacing: 8) {
+            HStack {
+                assets.icon?.frame(width: 40, height: 40)
+                    .clipShape(RoundedRectangle(cornerRadius: 8))
+                VStack(alignment: .leading) {
+                    assets.headline.font(.headline)
+                    assets.starRating?.frame(height: 12)
+                }
+                Spacer()
+                AdBadge()
+            }
+            assets.body?.font(.subheadline).foregroundStyle(.secondary)
+            assets.media.aspectRatio(assets.mediaAspectRatio, contentMode: .fit)
+            assets.callToAction?
+                .font(.headline)
+                .foregroundStyle(.white)
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 10)
+                .background(.blue, in: RoundedRectangle(cornerRadius: 10))
+        }
+        .padding()
+    }
+}
+```
+
+Notes:
+
+- `assets.callToAction` is **not a `Button`** — the SDK owns the tap; just style it like a button.
+- Rendering raw data (`assets.ad.headline`, …) with your own views? Tag them with `.nativeAdAsset(.headline)` so clicks are attributed.
+- `assets.media` is a real `GADMediaView` — required for video ads.
+
+## Error Handling
+
+All thrown errors are `AdmobSwiftUIError`:
+
+```swift
+do {
+    try await interstitialCoordinator.loadAndPresent(from: vc)
+} catch AdmobSwiftUIError.adLoadFailed(let underlying) {
+    print("Load failed: \(underlying)")
+} catch AdmobSwiftUIError.adNotLoaded {
+    print("Present called before load")
+} catch {
+    print(error)
+}
+```
+
+Cases: `adNotLoaded`, `adLoadFailed`, `presentationFailed`, `sdkNotInitialized`, `adExpired`, `invalidConfiguration`, `rewardNotEarned`, `consentGatheringFailed`.
+
+## Logging
+
+```swift
+AdmobSwiftUI.logLevel = .debug   // .none / .error / .warning / .info / .debug
+```
+
+Defaults to `.debug` in Debug builds and `.error` in Release builds.
+
+## Demo
+
+Open `Demo/AdmobSwitUIDemo.xcodeproj` for a working example of every ad format, the consent flow, and custom native layouts.
 
 ## License
 
